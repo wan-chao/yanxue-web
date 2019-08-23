@@ -1,0 +1,49 @@
+.el-calendar-table .el-calendar-day{
+	padding: 0 !important;
+	height: 70px !important;
+}
+.el-input__inner{
+	background: transparent !important;
+	border:none !important;
+	height: 100% !important;
+}
+
+.active-tab .el-tabs__item{
+	height: 60px !important;
+	line-height: 60px !important;
+	font-size: 16px !important;
+}
+.active-tab .el-tabs__item.is-active{
+	color: #fff !important;
+	background: #2f76df !important;
+}
+.active-tab .el-tabs__item:hover{
+	color: #333 !important;
+}
+.active-tab .el-tabs__item.is-active:hover{
+	color: #fff !important;
+}
+
+.durp-box{
+	top: 184px !important;
+}
+.durp-box2{
+	top: 442px !important;
+}
+.durp-time{
+	top: 220px !important;
+}
+.durp-time2{
+	top: 260px !important;
+}
+.durp-time3{
+	top: 310px !important;
+}
+
+.move-enter-active, .regitWrap .move-leave-active {
+    transition: all 0.3s linear;
+    transform: translate3d(0, 0, 0);
+}
+.move-enter, .regitWrap .move-leave {
+    transform: translate3d(100%, 0, 0);
+}
