@@ -10,7 +10,7 @@
         <span class="el-dropdown-link">
           {{user.userName}}<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
-        <el-dropdown-menu slot="dropdown">
+        <el-dropdown-menu slot="dropdown" class="dropdown-menu">
           <el-dropdown-item command="1">退出登录</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -124,6 +124,9 @@ export default {
   box-shadow: 0 1px 5px #ddd;  
   box-sizing: border-box;
   transition: all 0.05s linear;
+}
+.dropdown-menu{
+  top: 47px !important;
 }
 .show-header{
   top: 0;
