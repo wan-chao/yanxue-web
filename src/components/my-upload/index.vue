@@ -57,10 +57,10 @@ export default {
     handleChange(file, fileList){
       console.log('56',fileList)
       this.fileList = fileList
-      const isLt2M = fileList[0].size / 1024 / 1024 < 10  //这里做文件大小限制
+      const isLt2M = fileList[0].size / 1024 / 1024 < 50  //这里做文件大小限制
       if(!isLt2M) {
         this.$message({
-          message: '上传文件大小不能超过 10MB!',
+          message: '上传文件大小不能超过 50MB!',
           type: 'warning'
         });
         return

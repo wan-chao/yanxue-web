@@ -3,7 +3,7 @@
 		<div class="whole-tab" v-if="!disable&&!planNotEditor">
 			<my-upload ref="planUpload" accept="application/pdf" @preview="planPreview" v-show="!planFile.length">
 				<div class="edit-btn">上传整体活动方案</div>
-				<div class="warn-txt">仅支持PDF格式文档，大小不能超过10MB!</div>
+				<div class="warn-txt">仅支持PDF格式文档，大小不能超过50MB</div>
 			</my-upload>
 			<span class="file-ok" v-for="(item,index) in planFile" :key="index" v-show="planFile.length" @click="deletePlan(item.name)">{{item.name.split('_')[1]}}</span>
 		</div>

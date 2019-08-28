@@ -32,9 +32,9 @@ module.exports = {
     devServer: {
         proxy: {
             '/api': {
-                // target: 'http://192.168.222.104:8765',
+                target: 'http://192.168.222.100:8765',
                 // target: 'http://111.47.18.22:13782/yanxue',
-                target: 'http://47.96.165.125:8888',
+                // target: 'http://47.96.165.125:8888',
             },
         }
     },
