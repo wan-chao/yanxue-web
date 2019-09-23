@@ -168,6 +168,7 @@ export default {
 }
 .user-list{
   margin-top: 30px;
+  height: 108px;
   display: flex;
   justify-content: flex-start;
 }

@@ -1,3 +1,4 @@
+import '@babel/polyfill'
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
@@ -13,7 +14,7 @@ import VXETable from 'vxe-table'
 import 'vxe-table/lib/index.css'
 Vue.use(VXETable)
 
-import VueQuillEditor from 'vue-quill-editor'
+import VueQuillEditor from 'vue-quill-editor' //编辑器不兼容ie10级以下
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
