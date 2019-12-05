@@ -11,13 +11,33 @@
 				<div class="base">
 					<p>基本信息</p>
 					<el-form ref="taskForm" :inline="true" :rules="rules" :model="taskForm" label-width="120px"  class="base-form" size="mini">
-						<el-form-item label="活动名称 ：" class="form-type" prop="actName" required>
+						<el-form-item label="活动名称 ：" :class="baseNotEditor?'form-type':'form-type-not'" prop="actName" required>
 							<div class="base-select">
 								<el-input  v-model="taskForm.actName" :disabled="baseNotEditor" clearable placeholder="请输入活动名称"></el-input>
 							</div>
 						</el-form-item>
 
-						<el-form-item label="主办方 ：" class="form-type" prop="organizerId" required>
+						<el-form-item label="开始日期 ：" class="form-type" prop="startTime" v-if="baseNotEditor">
+							<div class="base-select">
+								<el-date-picker v-model="taskForm.startTime" type="date" :disabled="baseNotEditor" @change="startDateChange" clearable placeholder="请输入开始日期"
+									:picker-options="pickerStart"
+									format="yyyy 年 MM 月 dd 日"
+									value-format="yyyy-MM-dd">
+								</el-date-picker>
+							</div>
+						</el-form-item>
+
+						<el-form-item label="结束日期 ：" class="form-type" prop="endTime" v-if="baseNotEditor">
+							<div class="base-select">
+								<el-date-picker v-model="taskForm.endTime" type="date" :disabled="baseNotEditor"  clearable placeholder="请输入结束日期"
+									:picker-options="pickerEnd"
+									format="yyyy 年 MM 月 dd 日"
+									value-format="yyyy-MM-dd">
+								</el-date-picker>
+							</div>
+						</el-form-item>
+
+						<el-form-item label="主办方 ：" :class="baseNotEditor?'form-type':'form-type-not'" prop="organizerId" required>
 							<div class="base-select">
 								<el-select class="select-input" :disabled="baseNotEditor||orgDisable" v-model="taskForm.organizerId" placeholder="请选择主办方" @change="chargeOffice">
 									<el-option
@@ -31,7 +51,7 @@
 							</div>
 						</el-form-item>
 
-						<el-form-item label="承办方 ：" class="form-type" prop="undertakeId" required>
+						<el-form-item label="承办方 ：" :class="baseNotEditor?'form-type':'form-type-not'" prop="undertakeId" required>
 							<div class="base-select">
 								<el-select class="select-input" :disabled="baseNotEditor || underDisable" v-model="taskForm.undertakeId" placeholder="请选择承办方" @change="chargeOffice">
 									<el-option
@@ -45,7 +65,7 @@
 							</div>
 						</el-form-item>
 
-						<el-form-item label="供应方 ：" class="form-type" prop="supplyId" required>
+						<el-form-item label="供应方 ：" :class="baseNotEditor?'form-type':'form-type-not'" prop="supplyId" required>
 							<div class="base-select">
 								<el-select class="select-input" :disabled="baseNotEditor || supplyDisable" v-model="taskForm.supplyId" placeholder="请选择供应方" @change="chargeOffice">
 									<el-option
@@ -62,13 +82,20 @@
 				</div>
 			</div>
 
-			<!-- 监管人 -->
-			<div class="base-info" v-show="showMainstayRegulator">
-				<regulator-man :status="!mainstayNotEditor" :actId="taskForm.actId" :techers="teacherList" :officeList="officeArr" @change="setPerson"></regulator-man>
+			<div class="base-info">
+				<div class="base">
+					<p>参与班级</p>
+					<classes-select :disabled="baseNotEditor" :userType="taskForm.organizerId" :class_ids="taskForm.class_ids" @select="handleClassSelect" v-if="userData.officeId"></classes-select>
+				</div>
 			</div>
 
+			<!-- 监管人 -->
+			<!-- <div class="base-info" v-show="showMainstayRegulator">
+				<regulator-man :status="!mainstayNotEditor" :actId=" taskForm.actId" :techers="teacherList" :officeList="officeArr" @change="setPerson"></regulator-man>
+			</div> -->
+
 			<!-- 主体对象 -->
-			<div class="base-info" v-show="showMainstayRegulator">
+			<!-- <div class="base-info" v-show="showMainstayRegulator">
 				<div class="base">
 					<p>主体对象（活动的主体对象）</p>
 					<student-tab :list="studentList" v-show="mainstayNotEditor"></student-tab>	
@@ -77,11 +104,16 @@
 					<div class="edit-btn" v-if="!studentData.length" @click="writeMainstay">编辑 >></div>
 					<div class="btn-ok" v-else @click="editorMainstay">去修改 >></div>
 				</div>
-			</div>
+			</div> -->
 
       <!-- 选项卡 -->
       <div class="active-tab">
         <card-tab :actStatus="actStatus" :actId="taskForm.actId" :scheduleList="scheduleList" :courseList="courseList" :serverList="serverList" :planList="planList" :wholeList="wholeList"></card-tab>
+      </div>
+
+      <!-- 选项卡二 -->
+      <div class="active-tab" v-if="showTableForm">
+        <tab-form :class_ids="taskForm.class_ids" v-if="userData.officeId"></tab-form>
       </div>
 
 			<div class="add-footer" v-show="!hideSubmitBtn">
@@ -97,7 +129,9 @@ import { mapState } from 'vuex'
 import MyHeader from '@/components/my-header'
 import CardTab from '@/components/card-tab'
 import StudentTab from './student-tab'
+import TabForm from './tab-form/index'
 import RegulatorMan from './regulator-man'
+import ClassesSelect from './classes-select/index'
 import {STATUS_TYPE,TYPE} from '@/config/config'
 import {activeSave} from '@/api/active'
 import {officeList} from '@/api/organization'
@@ -118,6 +152,8 @@ const formData = {
 	imgUrl:'',
 	actStatus:'',
 	actDocUri:'',
+	class_ids:'',
+	attend_plan_total:0,
 	actSchedulesList:[],
 	actServiceList:[],
 	emergencyPlan:[],
@@ -127,16 +163,38 @@ const formData = {
 export default {
   name: 'create',
   components: {
-		MyHeader,CardTab,RegulatorMan,StudentTab
+		MyHeader,CardTab,RegulatorMan,StudentTab,TabForm,ClassesSelect
   },
   data(){
     return {
 			taskForm:formData,
+			pickerStart:{
+				disabledDate: (time) => {
+					let end = new Date(this.taskForm.endTime).getTime()
+					if (this.taskForm.endTime != "") {
+						return time.getTime() < Date.now() || time.getTime() > end;
+					} else {
+						return time.getTime() < Date.now();
+					}
+
+				}
+			},
+			pickerEnd:{
+				disabledDate: (time) => {
+					let start = new Date(this.taskForm.startTime).getTime()
+					if (this.taskForm.startTime != "") {
+						return time.getTime() < start || time.getTime() < Date.now();
+					} else {
+						return time.getTime() < Date.now();
+					}
+				}
+			},
+			oss:'oss-cn-hangzhou.aliyuncs.com',
 			userData:{},
       orgDisable:false,
 			underDisable:false,
       supplyDisable:false,
-      actStatus:'', //活动状态
+			actStatus:'', //活动状态
 			sponsorList:[],//主办方列表
 			undertakeList:[],//承办方列表
 			supplyList:[],//供应方列表
@@ -173,6 +231,9 @@ export default {
 			'wholeData',
 			'studentData'
 		]),
+		startValue(){
+			return this.taskForm.startTime
+		},
 		courseComplete(){
 			return this.$store.getters['exercise/courseComplete']
 		},
@@ -198,8 +259,11 @@ export default {
 			return this.actStatus===STATUS_TYPE.BEGIN || this.actStatus===STATUS_TYPE.END
 		},
 		hideSubmitBtn(){
-			return this.actStatus===STATUS_TYPE.CHECK || this.actStatus===STATUS_TYPE.BEGIN || this.actStatus===STATUS_TYPE.END
+			return this.actStatus===STATUS_TYPE.CHECK || this.actStatus===STATUS_TYPE.BEGIN || this.actStatus===STATUS_TYPE.END || this.actStatus===STATUS_TYPE.PASS
 		},
+		showTableForm(){
+			return this.actStatus===STATUS_TYPE.PASS
+		}
 	},
 	methods:{
 		goSuggestion(){
@@ -209,7 +273,26 @@ export default {
           id: this.taskForm.actId
         }
       })
-    },
+		},
+		startDateChange(data){
+			console.log('////////',data)
+		},
+		//参与班级
+		handleClassSelect(data){
+			console.log('参与班级',data)
+			let class_ids = '' 
+			let attend_plan_total = 0
+			if(data.length){
+				let list = []
+				data.forEach(v=>{
+					list.push(v.classId)
+					attend_plan_total+=v.total
+				})
+				class_ids = list.join(',')
+			}
+			this.taskForm.class_ids = class_ids
+			this.taskForm.attend_plan_total = attend_plan_total
+		},
 		saveForm(formName){
 			this.taskForm.actStatus = STATUS_TYPE.SUBMIT;
 			this.taskForm.actDocUri=this.wholeData
@@ -223,7 +306,9 @@ export default {
 		submitForm(formName){
 			this.$refs[formName].validate((valid) => {
 				if (valid) {
-					if(!this.courseComplete){
+					if(!this.taskForm.class_ids){
+						this.$notify({title: '警告',message: '参与班级未选择',type: 'warning'});
+					}else if(!this.courseComplete){
 						this.$notify({title: '警告',message: '课程设计内容未填写完整！',type: 'warning'});
 					}else if(!this.scheduleComplete){
 						this.$notify({title: '警告',message: '活动行程内容未填写完整！',type: 'warning'});
@@ -240,7 +325,6 @@ export default {
 						this.taskForm.course=this.courseData
 						this.taskForm.actServiceList=this.serverData
 						this.taskForm.emergencyPlan=this.planData
-						console.log(this.taskForm)
 						this.activitySave(this.taskForm)
 					}
 				}
@@ -294,6 +378,7 @@ export default {
 		},
 		setUserList(data){
 			this.userData=data
+			this.searchOffice()
 		},
 		setPerson(data){
 			this.keySearchActive(this.taskForm.actId)
@@ -308,7 +393,11 @@ export default {
 			this.courseList = active.course?active.course:[]
 			this.serverList = active.actServiceList?active.actServiceList:[]
 			this.planList = active.emergencyPlan?active.emergencyPlan:[]
-			this.wholeList = active.ossCourse?active.ossCourse:''
+			this.wholeList = active.ossCourse?active.ossCourse.replace("oss-cn-hangzhou-internal.aliyuncs.com",this.oss):''
+			this.$store.dispatch('exercise/setPlanData',this.planList)
+			this.$store.dispatch('exercise/setServerData',this.serverList)
+			this.$store.dispatch('exercise/setScheduleData',this.scheduleList)
+			this.$store.dispatch('exercise/setCourseData',this.courseList)
 			this.$store.dispatch('exercise/setWholeData',active.actDocUri?active.actDocUri:'')
 			this.teacherList = active.teacherList?active.teacherList:[]
 			this.studentList = active.studentList?active.initStudent():[]
@@ -327,6 +416,8 @@ export default {
 				imgUrl:'',
 				actStatus:'',
 				actDocUri:'',
+				class_ids:'',
+				attend_plan_total:0,
 				actSchedulesList:[],
 				actServiceList:[],
 				emergencyPlan:[],
@@ -358,7 +449,7 @@ export default {
 		},
 		searchOffice(){
 			officeList().then(res=>{
-				console.log(res)
+				console.log('查询机构',res)
 				if(res.status===200){
 					let list = res.data
 					this.officeArr = res.data
@@ -387,7 +478,6 @@ export default {
 							this.taskForm.supplyId = officeId
 						}
 					}
-
 				}else{
 					this.sponsorList = [] //主办
 					this.undertakeList = [] //承办
@@ -410,9 +500,7 @@ export default {
     },
 	},
   mounted(){
-		console.log(this.$route.query)
 		this.clearForm();
-		this.searchOffice()
 		if(!this.$route.query.id){
 			return
 		} 
@@ -489,7 +577,14 @@ export default {
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
-  width: 48%;
+  width: 32%;
+  height: 65px;
+}
+.form-type-not{
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+  width: 40%;
   height: 65px;
 }
 .base-select{
@@ -497,8 +592,6 @@ export default {
 	flex: none;
 	display: flex;
 	align-items: center;
-	width:230px;
-	margin-right: 80px;
 	height: 38px;
 	border-radius: 2px;
 	border: 1px solid #ccc;
@@ -549,7 +642,7 @@ export default {
 	cursor: pointer;
 }
 .add-footer{
-	margin: 50px 0;
+	margin: 20px 0;
 }
 .save-btn{
 	width: 120px;

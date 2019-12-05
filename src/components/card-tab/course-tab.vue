@@ -133,14 +133,21 @@ export default {
 			this.$store.dispatch('exercise/setCourseData',v)
 		}, 500),
 		courseList(val){
-			console.log('1111',val)
+			console.log('课程设计',val)
 			if(val.length){
 				val.forEach((v,i)=>{
-					this[`value${i+1}`]=v.itemValue
+					if(v.itemCode == '01'){
+						this.value1=v.itemValue
+					}else if(v.itemCode == '02'){
+						this.value2=v.itemValue
+					}else if(v.itemCode == '03'){
+						this.value3=v.itemValue
+					}
 				})
 			}
 		},
 		checkCourse(val){
+			console.log('^^^^^',val)
 			val.forEach(v=>{
 				let index = this.markList.findIndex(i=>{
 					return i.checkCode === v.checkCode
@@ -152,6 +159,19 @@ export default {
 		}
 	},
   mounted(){
+		if(this.courseList.length){
+			this.courseList.forEach((v,i)=>{
+				this[`value${i+1}`]=v.itemValue
+			})
+		}
+		this.checkCourse.forEach(v=>{
+			let index = this.markList.findIndex(i=>{
+				return i.checkCode === v.checkCode
+			})
+			if(index>=0){
+				this.markList[index] = v
+			}
+		})
   },
   destroyed(){
   }

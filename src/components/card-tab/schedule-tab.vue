@@ -144,7 +144,7 @@ export default {
 			return this.$store.state.active.charge
 		},
 		scheduleNotEditor(){
-			return this.actStatus===STATUS_TYPE.CHECK || this.actStatus===STATUS_TYPE.BEGIN || this.actStatus===STATUS_TYPE.END
+			return this.actStatus===STATUS_TYPE.CHECK || this.actStatus===STATUS_TYPE.BEGIN || this.actStatus===STATUS_TYPE.END || this.actStatus===STATUS_TYPE.PASS
 		},
 		actId(){
 			return this.$store.state.exercise.actId
@@ -278,6 +278,17 @@ export default {
 		}
 	},
   mounted(){
+		if(this.scheduleList.length){
+			this.list = this.scheduleList
+		}
+		this.checkSchedule.forEach(v=>{
+			let index = this.markList.findIndex(i=>{
+				return i.checkCode === v.checkCode
+			})
+			if(index>=0){
+				this.markList[index] = v
+			}
+		})
   }
 }
 </script>

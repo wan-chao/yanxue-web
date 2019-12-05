@@ -1,21 +1,18 @@
 <template>
   <div class="container">
-		<my-header></my-header>
     <div class="user-content">
 			<div class="base-info">
 				<div class="base">
-					<p>主体对象（活动的主体对象）
-					</p>
 
 					<div class="btn-list">
 						<div class="bar-btn">
-							<a  href="./student.xlsx" download="学生模板.xlsx">下载表格模板</a>
+							<a  href="./studentInfo.xlsx" download="学生信息模板.xlsx">下载表格模板</a>
 						</div>
 
 						<div class="bar-btn">
-								<my-upload ref="upload" accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" @preview="planPreview">
-									<span>上传表格</span>
-								</my-upload>
+							<my-upload ref="upload" accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" @preview="planPreview">
+								<span>上传表格</span>
+							</my-upload>
 						</div>
 
 						<add-dele @add="addClick" @dele="batchDele"></add-dele>
@@ -24,7 +21,7 @@
 
 					<el-table
 						ref="multipleTable"
-						:data="list"
+						:data="studentList"
 						tooltip-effect="dark"
 						stripe
 						@selection-change="handleSelectionChange"
@@ -37,10 +34,9 @@
 						</el-table-column>
 
 						<el-table-column
-							width="350"
+							prop="studentName"
 							align="center"
 							label="学生姓名">
-							<template slot-scope="scope">{{scope.row.studentName}}</template>
 						</el-table-column>
 
 						<el-table-column
@@ -48,35 +44,29 @@
 							align="center"
 							label="学籍号">
 						</el-table-column>
-						
-						<el-table-column
-							prop="cardSid"
-							align="center"
-							label="定位终端编号">
-						</el-table-column>
 
 						<el-table-column
-							prop="guaNameOne"
 							align="center"
 							label="监护人1">
+							<template slot-scope="scope">{{scope.row.guardianName.split(',')[0]?scope.row.guardianName.split(',')[0]:'无'}}</template>
 						</el-table-column>
 
 						<el-table-column
 							align="center"
 							label="监护人1手机">
-							<template slot-scope="scope">{{scope.row.guaMobileOne | phoneHide}}</template>
+							<template slot-scope="scope">{{scope.row.guardianMobile.split(',')[0]?scope.row.guardianMobile.split(',')[0]:'无'|phoneHide}}</template>
 						</el-table-column>
 
 						<el-table-column
-							prop="guaNameTwo"
 							align="center"
 							label="监护人2">
+							<template slot-scope="scope">{{scope.row.guardianName.split(',')[1]?scope.row.guardianName.split(',')[1]:'无'}}</template>
 						</el-table-column>
 
 						<el-table-column
 							align="center"
 							label="监护人2手机">
-							<template slot-scope="scope">{{scope.row.guaMobileTwo | phoneHide}}</template>
+							<template slot-scope="scope">{{scope.row.guardianMobile.split(',')[1]?scope.row.guardianMobile.split(',')[1]:'无'|phoneHide}}</template>
 						</el-table-column>
 
 						<el-table-column
@@ -91,11 +81,10 @@
 
 					</el-table>
 
-					<button class="save-back" @click="saveBack">返回</button>
 				</div>
 			</div>
 
-			 <transition name="el-zoom-in-center">
+			<transition name="move">
 				<form-box ref="form" :type="action" v-show="showDailog"  @submit="addList" @close="showDailog=false"></form-box>
 			</transition>
 
@@ -116,33 +105,31 @@
 </template>
 
 <script>
-import MyHeader from '@/components/my-header'
 import AddDele from '@/components/add-dele'
 import FormBox from './form-box'
-import { formatDate } from '@/util/common'
 import MyUpload from '@/components/my-upload'
-import Active from '@/js/active'
-import {activeInfo,studentImport,studentDelete,studentSave} from '@/api/active'
+import {searchStudent,studentImport,deleteStudent} from '@/api/classes'
 export default {
-  name: 'mainstay',
+	props:{
+		classId:{
+			type:String,
+			default:''
+		},
+	},
   components: {
-		MyHeader,AddDele,FormBox,MyUpload
+		AddDele,FormBox,MyUpload
   },
   data(){
     return {
-			index:-1,
-			action:'write',
+			classId:'',
       showDailog:false,
       centerDialogVisible:false,
-			list:[],
+			studentList:[],
 			multipleSelection:[],
 			deleList:[],
     }
 	},
 	filters:{
-		dateInit(val){
-			return formatDate(val,'second')
-		},
 		phoneHide(tel){
 			if(tel!='无'){
 				return tel.substr(0, 3) + '****' + tel.substr(7);
@@ -152,52 +139,52 @@ export default {
     }
 	},
 	methods:{
-		//查询活动信息
-		keySearchActive(id){
-      activeInfo(id).then(res=>{
+		//查询学生
+		getStudentList(id){
+      searchStudent(id).then(res=>{
         if(res.status === 200){
-					console.log(res)
-					let active = new Active(res.data);
-					this.list = active.studentList?active.initStudent():[]
-					this.$store.dispatch('exercise/setStudentData',this.list);
+					console.log('查询学生',res)
+					this.studentList = res.data
         }
       })
-    },
+		},
+		//删除学生
+		deleteStudentList(classId,list){
+			deleteStudent(classId,list).then(res=>{
+				console.log('删除学生',res)
+				if(res.status === 200){
+					this.$notify({title: '成功',message: '删除学生信息成功',type: 'success'});
+					this.getStudentList(classId)
+				}
+			})
+		},
 		planPreview(val){
 			let data = {
-				actId:this.$route.query.id,
 				file:val[0].file,
-				schoolId:this.$route.query.school
+				classId:this.classId
 			}
 			studentImport(data).then(res=>{
 				if(res.status === 200 ){
 					this.$refs.upload.clearFile()
-					this.keySearchActive(this.$route.query.id)
+					this.$notify({title: '成功',message: '导入学生信息成功',type: 'success'});
+          this.getStudentList(this.classId)
+				}else{
+					this.deleteImg()
 				}
+			}).catch(()=>{
+				this.deleteImg()
 			})
 		},
+		deleteImg(){
+      this.$refs.upload.clearFile()
+    },
 		addClick(){
-			this.action='write'
+			this.$refs.form.init()
 			this.showDailog=true
 		},
-		saveBack(){
-			this.$router.push({
-        path: '/create',
-        query: {
-          id: this.$route.query.id
-        }
-      })
-		},
 		addList(data){
-			let list = Object.assign(data,{actId:this.$route.query.id,schoolId:this.$route.query.school});
-			studentSave(list).then(res=>{
-				console.log(res)
-				if(res.status===200){
-					this.keySearchActive(this.$route.query.id)
-				}
-			})
+			this.studentInit()
 		},
-
 		batchDele(){
 			this.deleList = []
 			if(this.multipleSelection.length){
@@ -218,6 +205,7 @@ export default {
 		},
 		
 		handleEdit(index,row){
+			this.$refs.form.init()
 			this.$refs.form.editForm(row)
 			this.showDailog = true
 		},
@@ -229,26 +217,42 @@ export default {
 		comfimDelete(){
 			this.centerDialogVisible=false;
 			let list=this.deleList.map(v=>{
-				return {
-					actId:this.$route.query.id,
-					studentCode:v.studentCode,
-					cardSid:v.cardSid
-				}
+				return v.studentId
 			})
-			studentDelete(list).then(res=>{
-				console.log(res)
-				if(res.status === 200){
-					this.keySearchActive(this.$route.query.id)
-				}
-			})
+			this.deleteStudentList(this.classId,list)
 		},
+		studentInit(){
+			let {classId} = this.$route.params
+			if(classId){
+				this.classId = classId
+				this.getStudentList(classId)
+			}
+		}
 	},
   mounted(){
-		this.keySearchActive(this.$route.query.id)
+		this.studentInit()
   }
 }
 </script>
 
 <style lang="less" scoped>
-@import "./style/mainstay.less";
+@import '../../mainstay/style/mainstay.less';
+.container{
+	width: 100%;
+	padding-top: 0px;
+}
+.user-content{
+	width: 100%;
+}
+.base-info{
+	width: 100%;
+}
+.base{
+	width: 100%;
+}
+.base h1{
+	font-size: 26px;
+	padding: 20px 0;
+	border-bottom: 1px dashed #ccc;
+}
 </style>

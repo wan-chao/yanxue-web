@@ -77,7 +77,7 @@ export default {
   },
   data(){
     return {
-			list:['安全责任小组','交通事故处应急处理','饮食卫生应急处理','人身意外伤害及疾病应急处理','学生宿舍突发事故应急处理','其他'],
+			list:['安全责任小组','交通事故应急处理','饮食卫生应急处理','人身意外伤害及疾病应急处理','学生宿舍突发事故应急处理','其他'],
 			currentIndex:0,
 			value1:'',
 			value2:'',
@@ -193,7 +193,28 @@ export default {
 		planList(val){
 			if(val.length){
 				val.forEach((v,i)=>{
-					this[`value${i+1}`]=v.itemValue
+					switch(v.itemCode){
+					case '01':
+						this.value1 = v.itemValue
+						break;
+					case '02':
+						this.value2 = v.itemValue
+						break;
+					case '03':
+						this.value3 = v.itemValue
+						break;
+					case '04':
+						this.value4 = v.itemValue
+						break;
+					case '05':
+						this.value5 = v.itemValue
+						break;
+					case '06':
+						this.value6 = v.itemValue
+						break;
+					default:
+						break
+				}
 				})
 			}
 		},
@@ -209,6 +230,41 @@ export default {
 		}
 	},
   mounted(){
+		if(this.planList.length){
+			console.log('999',this.planList)
+			this.planList.forEach((v,i)=>{
+				switch(v.itemCode){
+					case '01':
+						this.value1 = v.itemValue
+						break;
+					case '02':
+						this.value2 = v.itemValue
+						break;
+					case '03':
+						this.value3 = v.itemValue
+						break;
+					case '04':
+						this.value4 = v.itemValue
+						break;
+					case '05':
+						this.value5 = v.itemValue
+						break;
+					case '06':
+						this.value6 = v.itemValue
+						break;
+					default:
+						break
+				}
+			})
+		}
+		this.checkPlan.forEach(v=>{
+			let index = this.markList.findIndex(i=>{
+				return i.checkCode === v.checkCode
+			})
+			if(index>=0){
+				this.markList[index] = v
+			}
+		})
   },
   destroyed(){
   }

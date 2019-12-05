@@ -144,7 +144,6 @@ export default {
 			this.$store.dispatch('exercise/setServerData',v)
 		}, 500),
 		serverList(val){
-			console.log('1111',val)
 			if(val.length){
 				val.forEach((v,i)=>{
 					this[`value${i+1}`]=v.serviceContent
@@ -243,7 +242,19 @@ export default {
 		},
 	},
   mounted(){
-
+		if(this.serverList.length){
+			this.serverList.forEach((v,i)=>{
+				this[`value${i+1}`]=v.serviceContent
+			})
+		}
+		this.checkServer.forEach(v=>{
+			let index = this.markList.findIndex(i=>{
+				return i.checkCode === v.checkCode
+			})
+			if(index>=0){
+				this.markList[index] = v
+			}
+		})
   }
 }
 </script>

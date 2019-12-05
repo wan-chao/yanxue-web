@@ -7,7 +7,6 @@
 	border:none !important;
 	height: 100% !important;
 }
-
 .active-tab .el-tabs__item{
 	height: 60px !important;
 	line-height: 60px !important;
@@ -23,7 +22,43 @@
 .active-tab .el-tabs__item.is-active:hover{
 	color: #fff !important;
 }
-
+.tag .el-checkbox__input{
+  display: none !important;
+}
+.search-list .el-checkbox__input{
+  display: none !important;
+}
+.search-list .is-checked{
+	background: #2f76df;
+	font-size: 14px;
+	line-height: 20px;
+}
+.search-list .el-checkbox.is-bordered.el-checkbox--mini .el-checkbox__label{
+	font-size: 14px;
+	line-height: 20px;
+}
+.search-list .el-checkbox__input.is-checked+.el-checkbox__label{
+	font-size: 14px;
+	line-height: 20px;
+	color: #fff;
+}
+.search-all .el-checkbox__input{
+  display: none !important;
+}
+.search-all .is-checked{
+	background: #2f76df;
+	font-size: 14px;
+	line-height: 20px;
+}
+.search-all .el-checkbox.is-bordered.el-checkbox--mini .el-checkbox__label{
+	font-size: 14px;
+	line-height: 20px;
+}
+.search-all .el-checkbox__input.is-checked+.el-checkbox__label{
+	font-size: 14px;
+	line-height: 20px;
+	color: #fff;
+}
 .durp-box{
 	top: 184px !important;
 }

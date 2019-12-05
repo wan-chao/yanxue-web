@@ -1,5 +1,5 @@
 export default class Active {
-    constructor({actStatus,actId,actCode,actName,actDocUri,organizerId,undertakeId,supplyId,ossImg,ossCourse,ossEmergency,supplyName,undertakeName,organizerName,startTime,endTime,course,emergencyPlan,actServiceList,actSchedulesList,imgUrl,teacherList,studentList}){
+    constructor({actStatus,actId,actCode,actName,actDocUri,classIds,attendPlanTotal,organizerId,undertakeId,supplyId,ossImg,ossCourse,ossEmergency,supplyName,undertakeName,organizerName,startTime,endTime,course,emergencyPlan,actServiceList,actSchedulesList,imgUrl,teacherList,studentList}){
         this.actId = actId
         this.actCode = actCode
         this.actStatus = actStatus
@@ -14,6 +14,8 @@ export default class Active {
         this.startTime = startTime
         this.endTime = endTime
         this.course = course
+        this.class_ids = classIds
+        this.attend_plan_total = attendPlanTotal
         this.emergencyPlan = emergencyPlan
         this.actSchedulesList = actSchedulesList
         this.actServiceList = actServiceList
@@ -31,8 +33,10 @@ export default class Active {
             organizerId:this.organizerId,
             undertakeId:this.undertakeId,
             supplyId:this.supplyId,
-            startTime:'',
-            endTime:'',
+            startTime:this.startTime,
+            endTime:this.endTime,
+            class_ids:this.class_ids,
+            attend_plan_total:this.attend_plan_total,
             imgUrl:'',
             actStatus:this.actStatus,
             actDocUri:this.actDocUri,
@@ -44,8 +48,8 @@ export default class Active {
     }
     initStudent(){
         return this.studentList.map(item=>{
-            let guardianMobile = item.guardianMobile.split(',')
-            let guardianName = item.guardianName.split(',')
+            let guardianMobile = item.guardianMobile?item.guardianMobile.split(','):''
+            let guardianName = item.guardianName?item.guardianName.split(','):''
             return {
                 cardSid:item.cardSid,
                 guaMobileOne:guardianMobile[0],

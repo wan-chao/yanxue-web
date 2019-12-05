@@ -71,7 +71,6 @@ export default {
 	},
 	watch:{
 		wholeData(val){
-			console.log('***',val)
 			if(val!=''){
 				this.planFile=[{
 					name:val
@@ -80,6 +79,11 @@ export default {
 		}
 	},
   mounted(){
+		if(this.wholeData!=''){
+			this.planFile=[{
+				name:this.wholeData
+			}]
+		}
   },
   destroyed(){
   }

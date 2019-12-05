@@ -17,6 +17,24 @@
 							</div>
 						</el-form-item>
 
+						<el-form-item label="开始日期 ：" class="form-type" prop="startTime" required>
+							<div class="base-select">
+								<el-date-picker v-model="taskForm.startTime" type="date" disabled clearable placeholder="请输入开始日期"
+									format="yyyy 年 MM 月 dd 日"
+									value-format="yyyy-MM-dd">
+								</el-date-picker>
+							</div>
+						</el-form-item>
+
+						<el-form-item label="结束日期 ：" class="form-type" prop="endTime" required>
+							<div class="base-select">
+								<el-date-picker v-model="taskForm.endTime" type="date" disabled  clearable placeholder="请输入结束日期"
+									format="yyyy 年 MM 月 dd 日"
+									value-format="yyyy-MM-dd">
+								</el-date-picker>
+							</div>
+						</el-form-item>
+
 						<el-form-item label="主办方 ：" class="form-type">
 							<div class="base-select">
 								<el-select class="select-input" disabled v-model="taskForm.organizerId">
@@ -61,7 +79,7 @@
 
       <!-- 选项卡 -->
       <div class="active-tab">
-				<card-tab :disable="editorEnable" :checkList="checkList" :actStatus="actStatus" :scheduleList="scheduleList" :courseList="courseList" :serverList="serverList" :planList="planList" :wholeList="wholeList"></card-tab>
+				<card-tab :disable="editorEnable" :userData="userData" v-if="userData.officeId" :checkList="checkList" :actStatus="actStatus" :scheduleList="scheduleList" :courseList="courseList" :serverList="serverList" :planList="planList" :wholeList="wholeList"></card-tab>
       </div>
 
 			<div v-if="hideSubmitBtn">
@@ -111,7 +129,9 @@ export default {
   },
   data(){
     return {
-      taskForm:formData,
+			taskForm:formData,
+			oss:'oss-cn-hangzhou.aliyuncs.com',
+			userData:{},
       orgDisable:false,
 			underDisable:false,
       supplyDisable:false,
@@ -147,6 +167,7 @@ export default {
 	},
 	methods:{
 		setUserList(data){
+			this.userData = data
 			this.userType = data.userType
 			activeEnableEditor(this.userType)?this.$router.push('/'):null
 		},
@@ -176,7 +197,7 @@ export default {
 			this.courseList = active.course?active.course:[]
 			this.serverList = active.actServiceList?active.actServiceList:[]
 			this.planList = active.emergencyPlan?active.emergencyPlan:[]
-			this.wholeList = active.ossCourse?active.ossCourse:''
+			this.wholeList = active.ossCourse?active.ossCourse.replace("oss-cn-hangzhou-internal.aliyuncs.com",this.oss):''
 			this.$store.dispatch('exercise/setWholeData',active.actDocUri?active.actDocUri:'')
 			this.$store.dispatch('active/setCharge',active.initOffice());
 			this.$store.dispatch('exercise/setActId',this.$route.query.id);
@@ -371,7 +392,7 @@ export default {
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
-  width: 48%;
+  width: 32%;
   height: 65px;
 }
 .base-select{
@@ -379,8 +400,6 @@ export default {
 	flex: none;
 	display: flex;
 	align-items: center;
-	width:230px;
-	margin-right: 80px;
 	height: 38px;
 	border-radius: 2px;
 	border: 1px solid #ccc;

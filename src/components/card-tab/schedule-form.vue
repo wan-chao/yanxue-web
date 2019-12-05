@@ -71,7 +71,7 @@
         </div>
       </el-form-item>
 
-      <el-form-item label="固定电子围栏：" >
+      <!-- <el-form-item label="固定电子围栏：" >
         <p class="base-span">勾选该地点所对应的固定电子围栏区域；没有对应的电子围栏区域的，请选择“本区域没有电子围栏”</p>
         <div class="check-input">
           <el-checkbox-group  v-model="taskForm.fenceIds" v-if="fenceItem.length">
@@ -79,7 +79,7 @@
           </el-checkbox-group>
           <div v-else>本区域没有电子围栏</div>
         </div>
-      </el-form-item>
+      </el-form-item> -->
 
     </el-form>
 

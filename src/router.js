@@ -35,6 +35,21 @@ const router = new Router({
       component: () => import('./views/user/index.vue'),
     },
     {
+      path: '/classInfo',
+      name: 'classInfo',
+      component: () => import('./views/classInfo/index.vue'),
+    },
+    {
+      path: '/createClasses',
+      name: 'createClasses',
+      component: () => import('./views/createClasses/index.vue'),
+    },
+    {
+      path: '/teachers',
+      name: 'teachers',
+      component: () => import('./views/teachers/index.vue'),
+    },
+    {
       path: '/organization',
       name: 'organization',
       component: () => import('./views/organization/index.vue')

@@ -96,6 +96,11 @@ export function urlList (data) {
       list.push('/organization')
     } else if(v.name === "用户管理"){
       list.push('/user')
+    } else if(v.name === "机构人员"){
+      list.push('/teachers')
+    } else if(v.name === "班级管理"){
+      list.push('/classInfo')
+      list.push('/createClasses')
     }else if(v.name === "报警管理"){
       list.push('/report')
     } else if(v.name === "电子围栏"){

@@ -78,12 +78,16 @@ export default {
           this.tabList.push({pic:require('../../assets/images/huodong.png'),name:'活动管理',url:activeEnableEditor(this.userType)?'/actions':'/venue'})
         }else if(v.name === "部门管理"){
           this.tabList.push({pic:require('../../assets/images/jigou.png'),name:'机构管理',url:'/organization'})
+        } else if(v.name === "机构人员"){
+          this.tabList.push({pic:require('../../assets/images/teacher.png'),name:'机构人员',url:'/teachers'})
+        } else if(v.name === "班级管理"){
+          this.tabList.push({pic:require('../../assets/images/student.png'),name:'班级信息',url:'/classInfo'})
         } else if(v.name === "用户管理"){
-          this.tabList.push({pic:require('../../assets/images/user.png'),name:'用户管理',url:'/user'})
+          this.tabList.push({pic:require('../../assets/images/user.png'),name:'权限管理',url:'/user'})
         } else if(v.name === "电子围栏"){
-          this.tabList.push({pic:require('../../assets/images/weilan.png'),name:'电子围栏',url:'/fence'})
+          // this.tabList.push({pic:require('../../assets/images/weilan.png'),name:'电子围栏',url:'/fence'})
         } else if(v.name === "设备管理"){
-          this.tabList.push({pic:require('../../assets/images/shebei.png'),name:'设备管理',url:'/device'})
+          // this.tabList.push({pic:require('../../assets/images/shebei.png'),name:'设备管理',url:'/device'})
         } else if(v.name === "信息发布"){
           this.tabList.push({pic:require('../../assets/images/xinxi.png'),name:'信息发布',url:'/information'})
         } else if(v.name === "统计分析"){

@@ -32,7 +32,9 @@ const getters = {
   },
   serverComplete: state => {
     if(state.serverData.length===7){
-      let list = state.serverData.slice(0,6)
+      let list = state.serverData.filter(item=>{
+        return item.serviceType!="07"
+      })
       let isComplete = list.every(v=>{
         return v.serviceContent!=''
       })
@@ -47,7 +49,9 @@ const getters = {
   },
   planComplete: state => {
     if(state.planData.length===6){
-      let list = state.planData.slice(0,5)
+      let list = state.planData.filter(item=>{
+        return item.itemCode!="06"
+      })
       let isComplete = list.every(v=>{
         return v.itemValue!=''
       })

@@ -24,14 +24,22 @@
 
       <el-form-item label="机构名称：" prop="officeName" required>
         <div class="base-input">
-          <el-select v-model="taskForm.officeName"  clearable  placeholder="请选择机构"  @change="nameChange">
+          <el-autocomplete
+            class="inline-input"
+            v-model="taskForm.officeName"
+            :fetch-suggestions="querySearch" 
+            value-key="officeName"
+            placeholder="请选择机构"
+            @select="nameChange"
+          ></el-autocomplete>
+          <!-- <el-select v-model="taskForm.officeName"  clearable  placeholder="请选择机构"  @change="nameChange">
             <el-option
               v-for="item in nameList"
               :key="item.name"
               :label="item.officeName"
               :value="item.officeName">
             </el-option>
-          </el-select>
+          </el-select> -->
         </div>
       </el-form-item>
 
@@ -109,11 +117,11 @@
             { required: true, message: '请输入机构名称'},
           ],
           loginName: [
-            { required: true, message: '请输入机构名称'},
+            { required: true, message: '请输入登录名'},
             { min: 2, max: 20, message: '长度在 2 到 20 个字符'}
           ],
           userName: [
-            { required: true, message: '请输入机构名称'},
+            { required: true, message: '请输入姓名'},
             { min: 2, max: 20, message: '长度在 2 到 20 个字符'}
           ],
           checkedRoles: [
@@ -127,6 +135,17 @@
       }
     },
     methods: {
+      querySearch(queryString, cb) {
+        var restaurants = this.nameList;
+        var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;
+        // 调用 callback 返回建议列表的数据
+        cb(results);
+      },
+      createFilter(queryString) {
+        return (restaurant) => {
+          return (restaurant.officeName.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+        };
+      },
       typeChange(val){
         this.setTypeList(val)
         this.taskForm.officeName =''
@@ -139,10 +158,10 @@
         if(index>=0) this.typeList = OFFICE_LIST[index].typeList
       },
       nameChange(val){
-        let index = this.nameList.findIndex(v=>{
-          return v.officeName == val
-        })
-        this.taskForm.officeId = this.nameList[index].officeId
+        // let index = this.nameList.findIndex(v=>{
+        //   return v.officeName == val
+        // })
+        this.taskForm.officeId = val.officeId
       },
       searchOffice(type=''){
         officeList(type).then(res=>{

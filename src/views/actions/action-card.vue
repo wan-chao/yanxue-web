@@ -42,25 +42,33 @@
     <ul>
       <li>
         <button class="suggset-btn" v-if="showBtn" @click.stop="goSuggestion">查看审核意见</button>
-        <button class="news-btn" v-if="!showBtn" @click.stop="newsInfo">相关新闻 >></button>
+        <!-- <button class="news-btn" v-if="!showBtn" @click.stop="newsInfo">相关新闻 >></button> -->
+        <button class="news-btn" v-if="showAssess" @click.stop="checkEvaluate">查看评价</button>
       </li>
     </ul>
-  
 
-    
+    <transition name="el-fade-in">
+      <evaluate-info v-if="showDailog" :actByStar='actByStar' :evaluateList='evaluateList'  @close="boxClose"></evaluate-info>
+		</transition>
   </div>
 </template>
 
 <script>
 import {STATUS_TYPE} from '@/config/config'
+import {selectActEvaluate} from '@/api/active'
+import EvaluateInfo from './evaluate-info'
 export default {
   props:{
     card:Object,
   },
   components: {
+    EvaluateInfo
   },
   data(){
     return {
+      showDailog:false,
+      actByStar:{},
+      evaluateList:[]
     }
   },
   filters:{
@@ -86,9 +94,22 @@ export default {
     },
     showBtn(){
       return this.card.actStatus === STATUS_TYPE.REFUSE?true:false
-    }
+    },
+    showAssess(){
+      return this.card.actStatus === STATUS_TYPE.END?true:false
+    },
   },
   methods:{
+    searchActEvaluate(actId){
+      selectActEvaluate(actId).then(res=>{
+        console.log('查看评价',res)
+        if(res.status===200){
+          this.actByStar = res.data.actByStar
+          this.evaluateList = res.data.evaluateList
+          this.showDailog=true
+        }
+      })
+    },
     editorActive(){
       this.$router.push({
         path: '/create',
@@ -121,6 +142,12 @@ export default {
           id: this.card.actId
         }
       })
+    },
+    checkEvaluate(){
+      this.searchActEvaluate(this.card.actId)
+    },
+    boxClose(){
+      this.showDailog=false
     }
   },
   mounted(){
